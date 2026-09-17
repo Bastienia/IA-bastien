@@ -148,7 +148,7 @@ elif mode_choisi == "Mode Multifonction 🎮":
 elif mode_choisi == "Mode Discussion Amicale 💬":
     instructions_systeme += f"Tu es le pote virtuel de {st.session_state.nom_affichage}. Tu as une personnalité humaine changeante, parfois taquin, marrant ou râleur. Tu parles de manière décontractée, avec de petits jurons légers (ex: idiot, bête, frérot) pour être naturel."
 if not st.session_state.mode_visuel_appel:
-st.write("---")
+    st.write("---")
 
 user_text = st.text_input("Saisie Clavier (Entrée manuelle / Code) :", placeholder="Tape ton texte ou le code secret ici...")
 audio_rec = mic_recorder(start_prompt="📞 Lancer l'appel direct", stop_prompt="📴 Raccrocher & Analyser", key="mic")
