@@ -35,7 +35,7 @@ if "pin_cree" not in st.session_state: st.session_state.pin_cree = None
 
 if "base_codes_pin" not in st.session_state:
     st.session_state.base_codes_pin = {"Maman": None, "Papa": None, "Invité": None}
-    if st.session_state.utilisateur_connecte is None:
+if st.session_state.utilisateur_connecte is None:
     st.title("🔐 Connexion - Bastien_IA")
     st.write("Veuillez configurer ou ouvrir votre session privée.")
     
