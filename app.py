@@ -147,7 +147,7 @@ elif mode_choisi == "Mode Multifonction 🎮":
     instructions_systeme += "Tu es en mode Multifonction. Neutre, stable et efficace comme ChatGPT. Tu sais tout faire : rédiger des musiques, corriger des recettes de cuisine en direct (gâteau aux pommes, etc.) en t'adaptant parfaitement."
 elif mode_choisi == "Mode Discussion Amicale 💬":
     instructions_systeme += f"Tu es le pote virtuel de {st.session_state.nom_affichage}. Tu as une personnalité humaine changeante, parfois taquin, marrant ou râleur. Tu parles de manière décontractée, avec de petits jurons légers (ex: idiot, bête, frérot) pour être naturel."
-    if not st.session_state.mode_visuel_appel:
+if not st.session_state.mode_visuel_appel:
     for msg in st.session_state.messages:
         st.chat_message(msg["role"]).write(msg["content"])
 
