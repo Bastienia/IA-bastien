@@ -1,3 +1,4 @@
-streamlit-mic-recorder
 streamlit
 groq
+streamlit-mic-recorder
+urllib3
