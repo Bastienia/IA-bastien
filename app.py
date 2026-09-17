@@ -57,7 +57,7 @@ if st.session_state.utilisateur_connecte is None:
                     st.session_state.nom_affichage = nom_saisi.strip()
                     st.success("✅ Profil et code PIN enregistrés ! Entrez votre code ci-dessous pour vous connecter.")
                     st.rerun()
-     else:
+            else:
             st.write(f"Profil détecté : **{st.session_state.nom_affichage}**")
             pin_entre = st.text_input("Entrez votre code PIN pour déverrouiller :", type="password")
             if st.button("Se connecter au canal privé 🚀"):
