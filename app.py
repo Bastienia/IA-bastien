@@ -51,15 +51,15 @@ if "base_codes_pin" not in st.session_state:
                 st.rerun()
             else: st.error("⚠️ Code Créateur incorrect. Accès refusé.")
             
-    else:
-        if st.session_state.pin_cree is None:
-            st.info("✨ Première connexion détectée sur cet appareil. Créez votre profil privé.")
-            nom_saisi = st.text_input("Choisissez votre nom d'utilisateur (Ex: Maman, Papa Philippe) :")
-            nouveau_pin = st.text_input("Créez votre code PIN (Entre 3 et 8 chiffres uniquement) :", type="password")
+        else: 
+    if st.session_state.pin_cree is None:
+        st.info("✨ Première connexion détectée sur cet appareil. Créez votre profil privé.")
+        nom_saisi = st.text_input("Choisissez votre nom d'utilisateur (Ex: Maman, Papa Philippe) :")
+        nouveau_pin = st.text_input("Créez votre code PIN (Entre 3 et 8 chiffres uniquement) :", type="password")
             
-            if st.button("Enregistrer mon profil privé 💾"):
-                if not nom_saisi.strip():
-                    st.error("❌ Erreur : Veuillez entrer un nom d'utilisateur.")
+    if st.button("Enregistrer mon profil privé 💾"):
+    if not nom_saisi.strip():
+        st.error("❌ Erreur : Veuillez entrer un nom d'utilisateur.")
                 elif not nouveau_pin.isdigit():
                     st.error("❌ Erreur : Le code doit contenir uniquement des chiffres.")
                 elif len(nouveau_pin) < 3 or len(nouveau_pin) > 8:
