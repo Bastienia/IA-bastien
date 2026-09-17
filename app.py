@@ -21,7 +21,7 @@ def generer_voix_ia_hd(texte):
         if response.status_code == 200: return response.content
     except: pass
     return None
-  if "messages" not in st.session_state: st.session_state.messages = []
+if "messages" not in st.session_state: st.session_state.messages = []
 if "mode_secret_active" not in st.session_state: st.session_state.mode_secret_active = False
 if "tentatives_suspectes" not in st.session_state: st.session_state.tentatives_suspectes = 0
 if "audio_a_lire" not in st.session_state: st.session_state.audio_a_lire = None
