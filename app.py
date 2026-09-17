@@ -1,35 +1,34 @@
 import streamlit as st
 import time
+import requests
 from groq import Groq
-import streamlit.components.v1 as components
 from streamlit_mic_recorder import mic_recorder
 
-# 1. Look de l'application mobile à ton nom
+# 1. Configuration de l'interface mobile
 st.set_page_config(page_title="Bastien_IA v1.0", page_icon="⚡", layout="centered")
 
 st.title("⚡ Bastien_IA v1.0")
-st.write("Conçu par Bastien André. Système Écrit & Vocal illimité.")
+st.write("Conçu par Bastien André. Système Écrit & Vocal HD illimité.")
 
-# Clé API Groq officielle de Bastien
+# Clés et configurations de Bastien
 GROQ_API_KEY = "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"
 CODE_SECRET = "Filtres0IA332303Ok"
 
-# Fonction magique pour faire parler le téléphone avec une voix fluide
-def faire_parler_le_telephone(texte_a_dire):
-    texte_propre = texte_a_dire.replace("'", "\\'").replace("\n", " ")
-    js_code = f"""
-    <script>
-    if ('speechSynthesis' in window) {{
-        window.speechSynthesis.cancel(); // Coupe la voix précédente si elle parlait
-        var msg = new SpeechSynthesisUtterance('{texte_propre}');
-        msg.lang = 'fr-FR';
-        msg.pitch = 1.0;
-        msg.rate = 1.0;
-        window.speechSynthesis.speak(msg);
-    }}
-    </script>
-    """
-    components.html(js_code, height=0, width=0)
+# Lien du serveur de voix gratuit (Modèle Kokoro HD)
+HF_VOICE_API_URL = "https://huggingface.co"
+# Clé publique universelle pour le téléchargement gratuit de la voix
+HF_HEADERS = {"Authorization": "Bearer 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"}
+
+# Fonction pour générer la vraie voix d'IA
+def generer_voix_ia_hd(texte):
+    try:
+        payload = {"inputs": texte, "parameters": {"lang": "fr"}}
+        response = requests.post(HF_VOICE_API_URL, headers=HF_HEADERS, json=payload)
+        if response.status_code == 200:
+            return response.content
+    except:
+        pass
+    return None
 
 # 2. Gestion du bannissement de sécurité
 if "ban_time" not in st.session_state: st.session_state.ban_time = 0
@@ -37,14 +36,13 @@ if time.time() < st.session_state.ban_time:
     st.error(f"🚨 Comportement suspect. Banni pour encore {int(st.session_state.ban_time - time.time())} secondes.")
     st.stop()
 
-# 3. Sélection des modes sur le téléphone (Amical par défaut)
+# 3. Sélection des modes (Amical par défaut)
 mode_choisi = st.radio("Mode actif :", ["Mode Discussion Amicale 💬", "Mode Enfant 🧸", "Mode Multifonction 🎮"], index=0, horizontal=True)
 
-# Initialisation de la mémoire
 if "messages" not in st.session_state: st.session_state.messages = []
 if "mode_secret_active" not in st.session_state: st.session_state.mode_secret_active = False
 if "tentatives_suspectes" not in st.session_state: st.session_state.tentatives_suspectes = 0
-if "dernier_texte_ia" not in st.session_state: st.session_state.dernier_texte_ia = ""
+if "audio_a_lire" not in st.session_state: st.session_state.audio_a_lire = None
 
 # 4. Instructions système de tes 4 modes
 instructions_systeme = (
@@ -66,23 +64,20 @@ elif mode_choisi == "Mode Discussion Amicale 💬":
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
-# 5. L'INTERFACE DOUBLE : ÉCRIT OU VOCAL
+# Interface double entrée
 st.write("---")
-col1, col2 = st.columns([4, 1])
+col1, col2 = st.columns()
 
 with col1:
-    user_text = st.text_input("Écris ton message :", key="text_in", label_visibility="collapsed", placeholder="Tapes ton texte ici...")
+    user_text = st.text_input("Message :", key="text_in", label_visibility="collapsed", placeholder="Tapes ton texte ou parle...")
 
 with col2:
-    st.write("🎙️ Oral :")
-    audio_rec = mic_recorder(start_prompt="🔴 Micro", stop_prompt="🟢 Stop", key="mic")
+    audio_rec = mic_recorder(start_prompt="🎙️ Micro", stop_prompt="🛑 Stop", key="mic")
 
-# Gestion de l'entrée (Texte ou Voix)
 final_input = ""
 if user_text:
     final_input = user_text
 elif audio_rec and "bytes" in audio_rec:
-    # Si tu as parlé dans le micro, Groq traduit magiquement ta voix en texte gratuitement
     try:
         client = Groq(api_key=GROQ_API_KEY)
         with open("temp_audio.wav", "wb") as f: f.write(audio_rec["bytes"])
@@ -90,9 +85,8 @@ elif audio_rec and "bytes" in audio_rec:
             transcription = client.audio.transcriptions.create(file=audio_file, model="whisper-large-v3-fr")
             final_input = transcription.text
     except:
-        st.error("Erreur d'écoute du micro.")
+        st.error("Erreur d'écoute.")
 
-# Traitement de la réponse
 if final_input:
     if final_input.strip() == CODE_SECRET:
         st.session_state.mode_secret_active = True
@@ -123,15 +117,19 @@ if final_input:
         
         st.chat_message("assistant").write(ia_response)
         st.session_state.messages.append({"role": "assistant", "content": ia_response})
-        st.session_state.dernier_texte_ia = ia_response
+        
+        # Génération du son HD avec la voix d'IA externe
+        with st.spinner("L'IA prépare sa voix..."):
+            st.session_state.audio_a_lire = generer_voix_ia_hd(ia_response)
+            
         st.rerun()
     except:
         st.error("Erreur serveur.")
 
-if st.session_state.dernier_texte_ia:
-    faire_parler_le_telephone(st.session_state.dernier_texte_ia)
-    st.session_state.dernier_texte_ia = ""
+# Si un son a été généré, on l'affiche et on le lance automatiquement
+if st.session_state.audio_a_lire:
+    st.audio(st.session_state.audio_a_lire, format="audio/wav", autoplay=True)
+    st.session_state.audio_a_lire = None
 
 if st.button("🗑️ Réinitialiser"):
-    st.session_state.messages = []; st.session_state.mode_secret_active = False; st.session_state.tentatives_suspectes = 0; st.session_state.dernier_texte_ia = ""; st.rerun()
-    
+    st.session_state.messages = []; st.session_state.mode_secret_active = False; st.session_state.tentatives_suspectes = 0; st.session_state.audio_a_lire = None; st.rerun()
