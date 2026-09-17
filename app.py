@@ -81,7 +81,7 @@ if st.session_state.utilisateur_connecte is None:
                 else: st.error("⚠️ Code PIN incorrect. Accès refusé.")
                 
     st.stop()
-  if time.time() < st.session_state.ban_time:
+if time.time() < st.session_state.ban_time:
     st.error("🚨 SYSTÈME VERROUILLÉ. Tentative de contournement détectée. Accès suspendu par Bastien André.")
     st.stop()
 
