@@ -234,7 +234,7 @@ with col_btn2:
         st.session_state.utilisateur_connecte = None
         st.rerun()
     if not st.session_state.mode_visuel_appel:
-        for msg in st.session_state.messages:
+    for msg in st.session_state.messages:
 
     
     
